@@ -1,0 +1,81 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+    <div class="container">
+        <a class="navbar-brand me-2" href="https://najottalim.uz/">
+            <img
+            src="{% static 'photo/logo.png' %}"
+            height="25"
+            loading="lazy"
+            style="margin-top: -1px;"
+            />
+        </a>
+        <button
+                data-mdb-collapse-init
+                class="navbar-toggler"
+                type="button"
+                data-mdb-target="#navbarButtonsExample"
+                aria-controls="navbarButtonsExample"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarButtonsExample">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <a href="{% url 'home' %}" class="btn btn-link px-3 me-2">Asosiy sahifa</a>
+            </ul>
+            {% if request.user.is_superuser %}
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <a href="{% url 'add_course' %}" class="btn btn-link px-3 me-2">Kurs qo`shish</a>
+            </ul>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <a href="{% url 'add_group' %}" class="btn btn-link px-3 me-2">Guruh qo`shish</a>
+            </ul>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <a href="{% url 'add_lesson' %}" class="btn btn-link px-3 me-2">Dars qo`shish</a>
+            </ul>
+            <div class="d-flex align-items-center">
+            {% endif %}
+            {% if request.user.is_authenticated %}
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <a href="{% url 'send_message' %}" class="btn btn-link px-3 me-2">Xabar yuborish</a>
+            </ul>
+            
+        </form>
+            <div class="d-flex justify-content-end">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <a href="{% url 'logout' %}" class="btn btn-link px-3 me-2">Log Out</a>
+            </ul>
+            </div>
+                <div class="dropdown">
+                    <a
+                        data-mdb-dropdown-init
+                        class="dropdown-toggle d-flex align-items-center hidden-arrow"
+                        href="#"
+                        id="navbarDropdownMenuAvatar"
+                        role="button"
+                        aria-expanded="false"
+                    >
+                    <img
+                        src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                        class="rounded-circle"
+                        height="35"
+                        alt="Black and White Portrait of a Man"
+                        loading="lazy"
+                    />
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center">
+                <a href="{% url 'login' %}" data-mdb-ripple-init type="button" class="btn btn-link px-3 me-2">
+                    Kirish
+                </a>
+                <a href="{% url 'register' %}" data-mdb-ripple-init type="button" class="btn btn-primary me-3">
+                    Ro'yxatdan o'tish
+                </a>
+            </div>
+            {% endif %}
+                <button id="switch" class="d-flex align-items-center">Toggle</button>
+            </div>
+        </nav>

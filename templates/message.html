@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <!-- Xabarlar (success, error) ko'rsatish -->
+    {% if messages %}
+    <div id="message-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 50%;">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show text-center message-alert"
+             role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Xabar yuborish formasi -->
+    <div class="card shadow-sm border-light mb-5">
+        <div class="card-body">
+            <h5 class="card-title mb-2">Yangi Xabar Yuborish</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.to_user.id_for_label }}" class="form-label">{{ form.to_user.label }}</label>
+                    {{ form.to_user }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.subject.id_for_label }}" class="form-label">{{ form.subject.label }}</label>
+                    {{ form.subject }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.message.id_for_label }}" class="form-label">{{ form.message.label }}</label>
+                    {{ form.message }}
+                </div>
+                <button type="submit" class="btn btn-primary">Xabar yuborish</button>
+            </form>
+        </div>
+    </div>
+{% endblock main %}
