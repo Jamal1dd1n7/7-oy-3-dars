@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block main %}
+    {% if messages %}
+        <div id="message-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 50%;">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show text-center message-alert"
+                role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="container">
+        <main class="mt-5 mb-5">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              {% for lesson in lessons %}
+                <div class="col car">
+                    <a href="{% url 'lesson_detail' lesson.id %}">
+                        <div class="card h-100" style="border: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden;">
+                             <div class="card-body" style="padding: 15px;">
+                                <h5 class="card-title" style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">{{lesson.id}}-dars: {{ lesson.title }}</h5>
+                            </div> 
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+    {% include 'components/_pagination.html' %}
+{% endblock main %}
+

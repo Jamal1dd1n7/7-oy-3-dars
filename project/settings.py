@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-y452^hj11a(0)g2^j1juv0*+cs%0x-%1b%)h8v+zxh9&i88ale
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -119,7 +119,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-# Static
+# STATIC_URL static fayllarga url manzilni belgilaydi
 STATIC_URL = 'static/'
 
 STATIC_ROOT = BASE_DIR / 'static'
@@ -127,7 +127,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'staticfiles'
 ]
 
-# Media 
+# MEDIA_URL
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -148,7 +148,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
+# Email ga jo`natish uchun mas`ul email
 EMAIL_HOST_USER = 'xolmatovjamoliddin588@gmail.com'
+# Email ning ikkinchi darajali paroli
 EMAIL_HOST_PASSWORD = 'awnd nqda ywlz apen'
 
 

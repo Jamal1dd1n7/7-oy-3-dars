@@ -1,16 +1,201 @@
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
-from django.core.handlers.wsgi import WSGIRequest
+# Imports:
+# Messages: template ga xabar jo`natish uchun ishlatiladi
+# ( message.success(request, 'Amal muvaffaqiyatli amalga oshirildi'));
 from django.contrib import messages
-from django.contrib.auth.models import User
+#--------------------------------------------------------------------------------
+
+# Login, Logout, Authenticate: ...;
 from django.contrib.auth import login, logout, authenticate
+#--------------------------------------------------------------------------------
+
+# Permission required, login required: Foydalanuvchi uchun ruxsatlar borligini tekshiruvchi funksiyalar;
 from django.contrib.auth.decorators import permission_required, login_required
-from datetime import datetime
-from django.utils.timezone import now 
+#--------------------------------------------------------------------------------
+
+# Mixin class: Ro`yxatdan o`tganlikka tekshiruvchi class;
+from django.contrib.auth.mixins import LoginRequiredMixin
+#--------------------------------------------------------------------------------
+
+# Send mail: Xabarni kiritilgan emailga jo`natish uchun ishlatiladi;
 from django.core.mail import send_mail
+#--------------------------------------------------------------------------------
+
+# Paginator: template da model cheklanganidan ortib ketsa, yangi page da chiqaradigan class;
 from django.core.paginator import Paginator
+#--------------------------------------------------------------------------------
+
+# WSGIRequest: ...;
+from django.core.handlers.wsgi import WSGIRequest
+#--------------------------------------------------------------------------------
+
+# Render, Redirect, Get_object_or_404, Get_list_or_404: ...; 
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+#--------------------------------------------------------------------------------
+
+# Reverse lazy: ...;
+from django.urls import reverse_lazy
+#--------------------------------------------------------------------------------
+
+# View class: ...;
+from django.views import View
+#--------------------------------------------------------------------------------
+
+# Generic Views: Oldindan tayyorlangan "view"lar( ListView, DetailView);
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+#--------------------------------------------------------------------------------
+
+# Now function: Ayni vaqtni olib beruvchi funksiya;
+from django.utils.timezone import now 
+#--------------------------------------------------------------------------------
+
+# Datetime function: Bugungi sana, oy, yilni olib beruvchi funksiya;
+from datetime import datetime
+#--------------------------------------------------------------------------------
+
+# User model: User uchun yozilgan model;
+# from django.contrib.auth.models import User
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# .models: models.py faylidan modellarni import qiladi;
 from .models import *
+#--------------------------------------------------------------------------------
+
+# .forms: forms.py faylidan formlarni import qiladi; 
 from .forms import *
+
+# Generic Views
+# Views:
+# Home,
+# Message(send_message)
+
+# Home
+class HomeView(ListView):
+    # Template name:
+    template_name = 'project1/intex.html'
+    # Model:
+    model = Group
+    # object:
+    context_object_name = "groups"
+    # extra context:
+    extra_context = {
+        "title": "Home"
+    }
+    
+    def get_context_data(self, *, objects_list=None,**kwargs):
+        context = super().get_context_data(objects_list=None, **kwargs)
+        context['courses'] = Course.objects.all()
+        return context
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Course
+class CourseView(LoginRequiredMixin, ListView):
+    template_name = 'project1/course.html'
+    model = Group
+    context_object_name = "groups"
+
+class AddCourseView(CreateView):
+    template_name = 'project1/add_course.html'
+    model = Course
+    fields = '__all__'
+    success_url = reverse_lazy('home')
+
+class UpdateCourseView(UpdateView):
+    model = Course
+    fields = '__all__'
+    pk_url_kwarg = 'course_id'
+
+class DeleteCourseView(DeleteView):
+    model = Course
+    success_url = reverse_lazy('home')
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Group
+class GroupView(ListView):
+    template_name = 'project1/group.html'
+    model = Lesson
+    context_object_name = 'lessons'
+
+class AddGroupView(CreateView):
+    template_name = 'project1/add_group.html'
+    model = Group
+    fields = ['title', 'teacher', 'course', 'student_count']
+    # success_url = reverse_lazy('home')
+
+class UpdateGroupView(UpdateView):
+    model = Group
+    fields = ['title', 'teacher', 'course', 'student_count']
+    pk_url_kwarg = 'group_id'
+
+class DeleteGroupView(DeleteView):
+    model = Group
+    success_url = reverse_lazy('home')
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# Lesson
+class LessonDetail(DetailView):
+    template_name = 'project1/lesson.html'
+    model = Lesson
+    pk_url_kwarg = 'lesson_id'
+
+class AddLessonView(CreateView):
+    template_name = 'project1/add_lesson.html'
+    model = Lesson
+    fields = ['title', 'teacher', 'content', 'duration', 'group']
+    # success_url = reverse_lazy('home')
+
+class UpdateLessonView(UpdateView):
+    model = Lesson
+    fields = ['title', 'teacher', 'content', 'duration', 'group']
+    pk_url_kwarg = 'lesson_id'
+
+class DeleteLessonView(DeleteView):
+    model = Lesson
+    success_url = reverse_lazy('home')
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# Message
+class SendMessage(LoginRequiredMixin, View):
+    template_name = 'templates/message.html'
+    def get(self, request):
+        form = MessageForm()
+        return render(request, 'message.html', {'form': form})
+    
+    def post(self, request):
+        form = MessageForm(data=request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.author = request.user
+            message.save()
+            try:
+                send_mail(
+                    subject=message.subject,  
+                    message=message.message,  
+                    from_email="jamal1dd1n_07 <request.user.email>",  
+                    recipient_list=[message.to_user],  
+                    fail_silently=False,
+                )
+                messages.success(request, f"Xabar '{message.subject}' muvaffaqiyatli yuborildi!")
+            except Exception as e:
+                messages.error(request, f"Xabar yuborishda xatolik yuz berdi: {e}")
+            return redirect('home')  
+        else:
+            messages.error(request, "Form noto'g'ri to'ldirilgan. Iltimos, qaytadan urinib ko'ring.")
+            return render(request, self.template_name, {'form': form})
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Function Views
+# Views: 
+# Home, 
+# Course(course, add_course, update_course, delete_course), 
+# Group(group, add_group), 
+# Lesson(lesson, add_lesson, update_lesson, delete_lesson),
+# Comment(comment_save, comment_update, comment_delete),
+# Auth(register, loginPage, logoutPage),
+# 404(send_404),
+# Message(send_message)
 
 # Home
 def home(request: WSGIRequest):
@@ -130,6 +315,7 @@ def lesson(request, lesson_id):
         'current_year': now().year,
     }
     return render(request, 'lesson.html', context)
+
 @permission_required('project1.add_lesson', login_url='404')
 def add_lesson(request):
     if request.method == 'POST':
@@ -306,7 +492,7 @@ def send_404(request:WSGIRequest):
     return render(request,'404.html')
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# send message 
+# Message 
 def send_message(request):
     # POST so'rovni qayta ishlash
     if request.method == 'POST':
@@ -322,7 +508,7 @@ def send_message(request):
                 send_mail(
                     subject=message.subject,  # Xabar sarlavhasi
                     message=message.message,  # Xabar matni
-                    from_email=request.user.email,  # Kimdan yuborilyapti
+                    from_email=f"Foydalanuvchi <{request.user.email}>",  # Kimdan yuborilyapti
                     recipient_list=[message.to_user],  # Kimga yuborilyapti
                     fail_silently=False,
                 )

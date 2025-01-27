@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
+from django.urls import reverse_lazy
 # ------------------------------------------------------------------------------------------------------------------------
 from PIL import Image
 
@@ -24,6 +25,9 @@ class Course(models.Model):
         
     def __str__(self):
         return self.title
+    
+    def get_absolut_url(self):
+        return reverse_lazy('course', kwargs={'course_id':self.pk})
 # ------------------------------------------------------------------------------------------------------------------------
 
 # Group model:
@@ -43,6 +47,9 @@ class Group(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolut_url(self):
+        return reverse_lazy('group_by_course', kwargs={'group_id':self.pk})
     
     class Meta:
         verbose_name = "Guruh"
@@ -67,6 +74,9 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolut_url(self):
+        return reverse_lazy('lesson_detail', kwargs={'lesson_id':self.pk})
     
     class Meta:
         verbose_name = "Dars"
