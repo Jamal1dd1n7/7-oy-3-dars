@@ -35,12 +35,12 @@
                 <a href="{% url 'add_lesson' %}" class="btn btn-link px-3 me-2">Dars qo`shish</a>
             </ul>
             <div class="d-flex align-items-center">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <a href="{% url 'send_message' %}" class="btn btn-link px-3 me-2">Xabar yuborish</a>
+                </ul>
+                
             {% endif %}
             {% if request.user.is_authenticated %}
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <a href="{% url 'send_message' %}" class="btn btn-link px-3 me-2">Xabar yuborish</a>
-            </ul>
-            
         </form>
             <div class="d-flex justify-content-end">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">

@@ -13,19 +13,37 @@
     {% endif %}
     <div class="container">
         <main class="mt-5 mb-5">
+            {% if object_list %}
+            <h2 class="text-center mb-4">Guruhlar</h2>
             <div class="row row-cols-1 row-cols-md-3 g-4">
-              {% for lesson in lessons %}
-                <div class="col car">
-                    <a href="{% url 'lesson_detail' lesson.id %}">
-                        <div class="card h-100" style="border: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden;">
-                             <div class="card-body" style="padding: 15px;">
-                                <h5 class="card-title" style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">{{lesson.id}}-dars: {{ lesson.title }}</h5>
-                            </div> 
+                {% for lesson in object_list %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-light">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            {% if perms.manager.change_lesson %}
+                            <a href="{% url 'update_lesson' lesson.id %}" class="text-dark me-2">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            {% endif %}
+        
+                            {% if perms.manager.delete_lesson %}
+                            <a href="{% url 'delete_lesson' lesson.id %}" class="text-dark">
+                                <i class="far fa-trash-can"></i>
+                            </a>
+                            {% endif %}
                         </div>
-                    </a>
-                </div>
+                        <a href="{% url 'lesson_detail' lesson.id %}" class="btn text-decoration-none text-dark">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ lesson.title }}</h5>
+                            </div>
+                        </a> 
+                    </div>
+                </div>    
                 {% endfor %}
             </div>
+            {% else %}
+            <h2 class="text-center">Hozirda guruhlar mavjud emas.</h2>
+            {% endif %}
         </main>
     </div>
     {% include 'components/_pagination.html' %}

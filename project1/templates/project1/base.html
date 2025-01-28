@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include 'components/_styles.html' %}
+
+    <title>
+      {% block title %}
+      {{ title }}
+      {% endblock title %}
+    </title>
+
+</head>
+<body class="body">
+
+
+<div class="container">
+
+{% include 'components/_navbar.html' %}
+
+<!--Start Main-->
+<main class="mt-5 mb-5 container">
+
+
+  {% block main %}
+  {% endblock main %}
+
+</main>
+
+{% include 'components/_footer.html' %}
+
+</div>
+{% include 'components/_scripts.html' %}
+
+</body>
+</html>

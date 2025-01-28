@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
-{% include 'components/_styles.html' %}
+
 {% block main %}
+    {% include 'components/_styles.html' %}
+
     {% if messages %}
     <div id="message-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050; width: 50%;">
         {% for message in messages %}
@@ -12,43 +14,65 @@
         {% endfor %}
     </div>
     {% endif %}
-    <div class="container">
-        <main class="mt-5 mb-5">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for course in courses %}
-                <div class="col car">
-                    <a href="{% url 'course' course.id %}" class="btn" >
-                        <div class="col mb-4">
-                            <div class="mb-5 mt-5">
-                                <h5 class="card-title">{{ course.title }}</h5>
-                            </div>
+
+    <div class="container my-5">
+        {% if courses %}
+        <h2 class="text-center mb-4">Kurslarimiz</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for course in courses %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-light">
+                    <div class="position-absolute top-0 end-0 p-2">
+                        {% if perms.manager.change_course %}
+                        <a href="{% url 'update_course' course.id %}" class="text-dark me-2">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        {% endif %}
+    
+                        {% if perms.manager.delete_course %}
+                        <a href="{% url 'delete_course' course.id %}" class="text-dark">
+                            <i class="far fa-trash-can"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'course' course.id %}" class="btn text-decoration-none text-dark">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ course.title }}</h5>
                         </div>
                     </a> 
-                </div>    
-                {% endfor %}
+                </div>
             </div>
-        </main>
+            {% endfor %}
+        </div>
+        {% else %}
+        <h2 class="text-center mb-4">Hozirda kurslar mavjud emas.</h2>
+        {% endif %}
     </div>
+    
+    {% if request.user.is_authenticated %}
     <div class="container">
         <main class="mt-5 mb-5">
+            {% if groups %}
+            <h2 class="text-center mb-4">Guruhlar</h2>
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 {% for group in groups %}
-                <div class="col car">
-                    <a href="{% url 'group_by_course' group.id %}" class="btn" >
-                        <div class="col mb-4">
-                            <div class="mb-5 mt-5">
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-light">
+                        <a href="{% url 'group_by_course' group.id %}" class="btn text-decoration-none text-dark">
+                            <div class="card-body text-center">
                                 <h5 class="card-title">{{ group.title }}</h5>
                             </div>
-                        </div>
-                    </a> 
+                        </a> 
+                    </div>
                 </div>    
                 {% endfor %}
             </div>
+            {% else %}
+            <h2 class="text-center">Hozirda guruhlar mavjud emas.</h2>
+            {% endif %}
         </main>
     </div>
+    {% endif %}
     {% include 'components/_scripts.html' %}
     {% include 'components/_pagination.html' %}
 {% endblock main %}
-
-
-

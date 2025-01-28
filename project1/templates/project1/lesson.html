@@ -29,18 +29,24 @@
     </div>
     <div class="card shadow-sm border-light mb-5">
         <div class="card-body">
-            <h5 class="card-title mb-2">Izoh qoldirish</h5>
-            <form method="POST" action="{% if update %}{% url 'updateComment' comment.id %} {% else %} {% url 'comment_save' lesson.id %} {% endif %}">
+            <h5 class="card-title mb-2">{% if update %} Izohni yangilash {% else %} Izoh qoldirish {% endif %}</h5>
+            <form method="POST" action="{% if update %}{% url 'updateComment' comment.id %}{% else %}{% url 'comment_save' lesson.id %}{% endif %}">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label for="{{ form.text.id_for_label }}" class="form-label">{{ form.text.label }}</label>
-                    {{ form.text }}
+                    <label for="{{ comment_form.text.id_for_label }}" class="form-label">
+                        {{ comment_form.text.label }}
+                    </label>
+                    {{ comment_form.text }}
                 </div>
-                <button type="submit" class="btn btn-primary">{% if update %} Izohni yangilash {% else %} Izoh qo'shish {% endif %}</button>
+                {% if update %}
+                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                    {% if update %} Izohni yangilash {% else %} Izoh qo'shish {% endif %}
+                </button>
             </form>
         </div>
     </div>
-
     <h5 class="mb-4">Izohlar:</h5>
     {% if comments %}
     <div class="list-group">

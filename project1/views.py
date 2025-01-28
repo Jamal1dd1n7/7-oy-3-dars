@@ -70,13 +70,9 @@ from .forms import *
 
 # Home
 class HomeView(ListView):
-    # Template name:
     template_name = 'project1/intex.html'
-    # Model:
     model = Group
-    # object:
     context_object_name = "groups"
-    # extra context:
     extra_context = {
         "title": "Home"
     }
@@ -90,46 +86,94 @@ class HomeView(ListView):
 # Course
 class CourseView(LoginRequiredMixin, ListView):
     template_name = 'project1/course.html'
-    model = Group
-    context_object_name = "groups"
-
+    def get_queryset(self):
+        groups = Group.objects.filter(course_id=self.kwargs.get('course_id'))  
+        if groups.exists():   
+            return groups  
+        else:
+            messages.error(self.request, 'Bu kursda hozirda guruhlar yo`q')
+            return None  
+        
+    def render_to_response(self, context, **response_kwargs):
+        if self.get_queryset() is None:
+            return redirect(reverse_lazy('home'))  
+        return super().render_to_response(context, **response_kwargs)
+    
+    
 class AddCourseView(CreateView):
     template_name = 'project1/add_course.html'
     model = Course
     fields = '__all__'
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Kurs muvaffaqiyatli qo`shildi")
+        return response
     success_url = reverse_lazy('home')
 
 class UpdateCourseView(UpdateView):
+    template_name = 'project1/add_course.html'
     model = Course
-    fields = '__all__'
     pk_url_kwarg = 'course_id'
+    fields = '__all__'
+    success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        messages.success(self.request, "Kurs ma'lumotlari muvaffaqiyatli o'zgartirildi")
+        return super().form_valid(form)
 
 class DeleteCourseView(DeleteView):
     model = Course
+    pk_url_kwarg = 'course_id'
     success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        messages.success(self.request, "Kurs ma'lumotlari muvaffaqiyatli o'chirildi")
+        return super().form_valid(form)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Group
 class GroupView(ListView):
     template_name = 'project1/group.html'
-    model = Lesson
-    context_object_name = 'lessons'
+    def get_queryset(self):
+        lessons = Lesson.objects.filter(group_id=self.kwargs.get('group_id'))  
+        if lessons.exists():
+            return lessons  
+        else:
+            messages.error(self.request, 'Bu guruhda hozirda darslar yo`q')
+            return None  
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.get_queryset() is None:
+            return redirect(reverse_lazy('home'))  
+        return super().render_to_response(context, **response_kwargs)
+    
 
 class AddGroupView(CreateView):
     template_name = 'project1/add_group.html'
     model = Group
     fields = ['title', 'teacher', 'course', 'student_count']
-    # success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Guruh muvoffaqiyatli qo`shildi')
+        return response
+    success_url = reverse_lazy('home')
 
 class UpdateGroupView(UpdateView):
+    template_name = 'project1/add_group.html'
     model = Group
     fields = ['title', 'teacher', 'course', 'student_count']
     pk_url_kwarg = 'group_id'
+    success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        messages.success(self.request, "Guruh ma'lumotlari muvaffaqiyatli o'zgartirildi")
+        return super().form_valid(form)
 
 class DeleteGroupView(DeleteView):
     model = Group
+    pk_url_kwarg = 'group_id'
     success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        messages.success(self.request, "Guruh ma'lumotlari muvaffaqiyatli o'chirildi")
+        return super().form_valid(form)
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -138,19 +182,39 @@ class LessonDetail(DetailView):
     template_name = 'project1/lesson.html'
     model = Lesson
     pk_url_kwarg = 'lesson_id'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(objects_list=None, **kwargs)
+        context['comments'] = Comment.objects.all()
+        context['comment_form'] = CommentForm()  
+        return context
 
+    def post(self, request, *args, **kwargs):
+        lesson = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.lesson = lesson  
+            comment.author = request.user  
+            comment.save()
+            messages.success(request, "Fikr muvaffaqiyatli qo'shildi!")
+        else:
+            messages.error(request, "Fikrni yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring.")
+        return redirect('lesson_detail', lesson_id=lesson.id)
 class AddLessonView(CreateView):
     template_name = 'project1/add_lesson.html'
     model = Lesson
     fields = ['title', 'teacher', 'content', 'duration', 'group']
-    # success_url = reverse_lazy('home')
+    success_url = reverse_lazy('home')
 
 class UpdateLessonView(UpdateView):
+    template_name = 'project1/add_lesson.html'
     model = Lesson
     fields = ['title', 'teacher', 'content', 'duration', 'group']
     pk_url_kwarg = 'lesson_id'
+    success_url = reverse_lazy('home')
 
 class DeleteLessonView(DeleteView):
+    template_name = 'project1/lesson_confirm_delete.html'
     model = Lesson
     success_url = reverse_lazy('home')
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -10,21 +10,21 @@ urlpatterns = [
     # Course
     path('course/<int:course_id>/',CourseView.as_view(), name='course'),
     path('course/add/', AddCourseView.as_view(), name='add_course'),
-    path('course/<int:course_id>/', UpdateCourseView.as_view(), name='update_course'),
-    path('course/<int:course_id>/', DeleteCourseView.as_view(), name='delet_course'),
+    path('course/<int:course_id>/update/', UpdateCourseView.as_view(), name='update_course'),
+    path('course/<int:course_id>/delete/', DeleteCourseView.as_view(), name='delete_course'),
     # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
     # Group
     path('group/<int:group_id>/', GroupView.as_view(), name='group_by_course'),
     path('group/add/', AddGroupView.as_view(), name='add_group'),
-    path('course/<int:course_id>/', UpdateGroupView.as_view(), name='update_course'),
-    path('course/<int:course_id>/', DeleteGroupView.as_view(), name='delete_course'),
+    path('group/<int:group_id>/update/', UpdateGroupView.as_view(), name='update_group'),
+    path('group/<int:group_id>/delete/', DeleteGroupView.as_view(), name='delete_group'),
     
     # Lesson
     path('lesson/<int:lesson_id>/', LessonDetail.as_view(), name='lesson_detail'),
     path('lesson/add/', AddLessonView.as_view(), name='add_lesson'),
-    path('lesson/<int:lesson_id>/', UpdateLessonView.as_view(), name='update_lesson'),
-    path('lesson/<int:lesson_id>/', DeleteLessonView.as_view(), name='delete_lesson'),
+    path('lesson/<int:lesson_id>/update/', UpdateLessonView.as_view(), name='update_lesson'),
+    path('lesson/<int:lesson_id>/delete/', DeleteLessonView.as_view(), name='delete_lesson'),
 
     # Message 
     path('message', SendMessage.as_view(), name='send_message'),
